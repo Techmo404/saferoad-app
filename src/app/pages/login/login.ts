@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { AuthService } from '../../auth.service';  // ⬅ RUTA CORRECTA
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,20 +17,19 @@ export class Login {
   password = '';
   error = '';
 
-  private auth = getAuth();  // ⬅ Ya no se injecta, se obtiene directo
-
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   async login() {
-    try {
-      this.error = '';
-      await signInWithEmailAndPassword(this.auth, this.email, this.password);
-      console.log('✅ Usuario autenticado');
+    this.error = '';
 
+    try {
+      console.log('🔐 Intentando iniciar sesión...');
+      await this.authService.login(this.email, this.password);
+      console.log('✅ Login correcto, redirigiendo...');
       this.router.navigate(['/dashboard']);
-    } catch {
-      this.error = 'Correo o contraseña incorrectos';
+    } catch (err: any) {
+      console.error("❌ Firebase error:", err.message ?? err);
+      this.error = err.message ?? 'Correo o contraseña incorrectos';
     }
   }
 }
-

@@ -7,6 +7,9 @@ import { provideAuth, getAuth, browserLocalPersistence, setPersistence } from '@
 
 import { firebaseConfig } from './firebase-config';
 
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './auth.interceptor';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -17,6 +20,11 @@ export const appConfig: ApplicationConfig = {
       const auth = getAuth();
       setPersistence(auth, browserLocalPersistence);
       return auth;
-    })
+    }),
+
+    // 🔥 Aquí agregamos el interceptor HTTP
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    )
   ]
 };

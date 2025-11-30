@@ -4,6 +4,30 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './auth-guard';
 
 export const routes: Routes = [
-  { path: '', component: Login },
-  { path: 'dashboard', component: Dashboard, canActivate: [authGuard] }
+
+  // 🔹 Redirige al usuario al login si entra a "/"
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+
+  // 🔹 Página de login (solo accesible si NO está logueado)
+  {
+    path: 'login',
+    component: Login
+  },
+
+  // 🔹 Dashboard protegido por el authGuard
+  {
+    path: 'dashboard',
+    component: Dashboard,
+    canActivate: [authGuard]
+  },
+
+  // 🔹 Manejo de rutas no existentes
+  {
+    path: '**',
+    redirectTo: 'login'
+  }
 ];
