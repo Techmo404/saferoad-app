@@ -1,0 +1,23 @@
+<div class="register-box">
+  <h2>Crear Cuenta</h2>
+
+  <form (submit)="register(); $event.preventDefault()">
+
+    <input type="text" placeholder="Nombre completo" [(ngModel)]="name" name="name" />
+
+    <input type="email" placeholder="Correo electrónico" [(ngModel)]="email" name="email" />
+
+    <input type="password" placeholder="Contraseña" [(ngModel)]="password" name="password" />
+
+    <button [disabled]="loading">
+      {{ loading ? 'Creando...' : 'Registrar' }}
+    </button>
+  </form>
+
+  <p class="success" *ngIf="success">{{ success }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <p class="login-text">
+    ¿Ya tienes cuenta? 👉 <a routerLink="/login">Inicia sesión</a>
+  </p>
+</div>

@@ -26,10 +26,11 @@
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
     "@angular/core": "^21.0.0",
+    "@angular/fire": "^21.0.0-rc.0",
     "@angular/forms": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
     "@angular/router": "^21.0.0",
-    "firebase": "^10.7.1",
+    "firebase": "^10.14.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

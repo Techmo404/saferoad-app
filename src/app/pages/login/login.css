@@ -28,3 +28,22 @@ button:hover {
 .error-msg {
   color: red;
 }
+.register-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.secondary-btn {
+  width: 100%;
+  padding: 12px;
+  background: #6c757d;
+  color: white;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background: #5a6268;
+}

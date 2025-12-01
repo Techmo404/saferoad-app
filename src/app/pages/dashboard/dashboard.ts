@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit } from '@angular/core';
+import { Auth, signOut } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,7 +11,11 @@ import { Component, AfterViewInit } from '@angular/core';
 })
 export class Dashboard implements AfterViewInit {
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private auth: Auth,
+    private router: Router
+  ) {}
 
   ngAfterViewInit() {
 
@@ -19,7 +25,7 @@ export class Dashboard implements AfterViewInit {
       error: (err) => console.error('❌ Error desde backend:', err)
     });
 
-    // 📝 Guardar en Firestore
+    // 📝 Guardar en Firestore (opcional)
     this.http.post('http://127.0.0.1:8000/save-data', {
       timestamp: new Date().toISOString(),
       action: "user_logged_in"
@@ -29,6 +35,16 @@ export class Dashboard implements AfterViewInit {
     });
 
     this.loadMap();
+  }
+
+  async logout() {
+    try {
+      await signOut(this.auth);
+      console.log('🚪 Sesión cerrada');
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('❌ Error al cerrar sesión:', error);
+    }
   }
 
   async loadMap() {
