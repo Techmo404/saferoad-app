@@ -36,25 +36,19 @@ export class Dashboard implements AfterViewInit {
 isCheckingSession = true; // <-- NUEVO
 
 ngAfterViewInit() {
-
   console.log("⏳ Esperando sesión (AuthService)...");
 
-  // 👇 Declaramos la variable antes del subscribe
-  let sub: any;
-
-  sub = this.authService.currentUser$.subscribe(user => {
-
+  const sub = this.authService.currentUser$.subscribe(user => {
     if (!user) {
       console.warn("🚫 No hay sesión, volviendo al login");
-
-      if (sub) sub.unsubscribe();
+      sub.unsubscribe();
       this.router.navigate(['/login']);
       return;
     }
 
-    console.log("🔐 Sesión detectada en Dashboard:", user.email);
+    console.log("🔐 Sesión detectada:", user.email);
 
-    // 👇 FIX: evita ExpressionChangedAfterItHasBeenCheckedError
+    // 👇 EVITA ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
       this.loading = false;
       this.getUserInfo();
@@ -62,10 +56,9 @@ ngAfterViewInit() {
       this.loadMap();
     }, 0);
 
-    if (sub) sub.unsubscribe();
+    sub.unsubscribe();
   });
 }
-
 
 
 
