@@ -1,75 +1,97 @@
+<div class="dashboard">
 
-<!-- 🔹 Barra superior con botón de salir -->
-<div class="top-bar">
-  <h2 class="title">SafeRoad Dashboard</h2>
-  <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
-</div>
-
-<div class="dashboard-container">
-
-  <!-- 🔥 BOTÓN PRINCIPAL -->
-  <button class="risk-btn" (click)="getRisk()">
-    🚦 Analizar riesgo en esta ubicación
-  </button>
-
-
-  <!-- 🧠 RESULTADO DE LA IA -->
-  <div *ngIf="riskResult" 
-       class="alert text-center mt-3"
-       [ngClass]="{
-        'alert-success': riskResult.predicted_risk === 'Bajo',
-        'alert-warning': riskResult.predicted_risk === 'Medio',
-        'alert-danger': riskResult.predicted_risk === 'Alto' || riskResult.predicted_risk === 'Crítico'
-       }">
-
-    <h3>Resultado IA</h3>
-    <strong>Riesgo detectado:</strong> {{ riskResult.predicted_risk }} 🚦<br>
-    <strong>Coordenadas:</strong> {{ riskResult.coords?.lat | number:'1.4-4' }},
-    {{ riskResult.coords?.lng | number:'1.4-4' }} <br>
-    <small>🕒 {{ riskResult.datetime }} — Modelo: {{ riskResult.model }}</small>
-  </div>
-
-
-  <!-- 🗺️ MAPA -->
-  <div id="map" style="height: 350px; width: 100%; margin-top: 20px;"></div>
-
-
-  <!-- 📜 HISTORIAL -->
-  <div class="history-container">
-  
-    <h2 class="mt-4">Historial de Riesgos</h2>
-
-    <!-- Loader -->
-    <div *ngIf="loading">⏳ Cargando historial...</div>
-
-    <!-- Si está vacío -->
-    <div *ngIf="!loading && history.length === 0" class="empty">
-      🚫 No hay registros aún.
+  <!-- barra superior -->
+  <header class="app-header">
+    <div class="brand">
+      <span>SafeRoad AI</span>
     </div>
 
-    <!-- Mostrar lista -->
-    <div *ngIf="!loading && history.length > 0">
-      <div *ngFor="let item of history; trackBy: trackById" class="card">
+    <button class="logout" (click)="logout()">Cerrar sesión</button>
+  </header>
 
-        <p><strong>📅 Fecha:</strong> {{ item.datetime }}</p>
-        <p><strong>📍 Ubicación:</strong> {{ item.coords?.lat }}, {{ item.coords?.lng }}</p>
-        <p><strong>🌡 Temp:</strong> {{ item.weather?.main?.temp }}°C</p>
-        <p><strong>🌤 Cielo:</strong> {{ item.weather?.weather?.[0]?.description }}</p>
-        <p><strong>🚦 Riesgo:</strong> 
-          <span [ngClass]="{
-            'text-success': item.predicted_risk === 'Bajo',
-            'text-warning': item.predicted_risk === 'Medio',
-            'text-danger': item.predicted_risk === 'Alto' || item.predicted_risk === 'Crítico'
-          }">
-            {{ item.predicted_risk }}
-          </span>
-        </p>
+  <div class="content container-fluid mt-4">
 
-        <hr>
+    <div class="row justify-content-center">
+
+      
+      <div class="col-lg-3 col-md-5">
+
+        <div class="card shadow-lg p-4 control-panel">
+
+          <h5 class="fw-bold text-primary mb-3">Centro de Control</h5>
+
+          <button class="btn btn-primary w-100 mb-3" (click)="getRisk()">
+             Analizar Zona Actual
+          </button>
+
+        </div>
+
+        <!-- resultado-->
+        <div *ngIf="riskResult" class="result-panel card p-4 shadow-lg mt-4">
+
+          <h4 class="fw-bold text-primary mb-3">
+             Resultado del Análisis
+          </h4>
+
+          <div class="risk-status-box mb-3"
+            [ngClass]="{
+              'low': riskResult.predicted_risk === 'Bajo',
+              'medium': riskResult.predicted_risk === 'Medio',
+              'high': riskResult.predicted_risk === 'Alto' || riskResult.predicted_risk === 'Crítico'
+            }">
+            {{ riskResult.predicted_risk }}
+          </div>
+
+          <hr>
+
+          <div class="row text-start">
+            <div class="col-6">
+              <h6 class="fw-bold"> Ubicación</h6>
+              Lat: {{ riskResult.coords.lat }} <br>
+              Lng: {{ riskResult.coords.lng }}
+            </div>
+
+            <div class="col-6">
+              <h6 class="fw-bold"> Fecha</h6>
+              {{ riskResult.datetime }}
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row mt-2">
+            <div class="col-6">
+              <h6 class="fw-bold"> Clima</h6>
+              {{ riskResult.weather.weather[0]?.description }} <br>
+              Temp: {{ riskResult.weather.main.temp }}°C <br>
+              Viento: {{ riskResult.weather.wind.speed }} km/h
+            </div>
+
+            <div class="col-6">
+              <h6 class="fw-bold"> Tráfico</h6>
+              Velocidad: {{ riskResult.traffic.speed }} km/h <br>
+              Congestión: {{ riskResult.traffic.jam_factor }} <br>
+              Estado: {{ riskResult.traffic.status }}
+            </div>
+          </div>
+
+          <hr>
+
+          <p class="mt-3 text-muted small">
+             Modelo usado: <strong>{{ riskResult.model }}</strong>
+          </p>
+
+        </div>
+
       </div>
+
+
+      <div class="col-lg-7 col-md-7">
+        <div class="card shadow-lg overflow-hidden">
+          <div id="map" class="map"></div>
+        </div>
+      </div>
+
     </div>
-
   </div>
-
-  <canvas id="riskChart" width="400" height="250"></canvas>
 </div>

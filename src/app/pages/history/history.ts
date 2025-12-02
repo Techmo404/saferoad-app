@@ -31,7 +31,7 @@ export class History implements OnInit {
 
         const list = data.records || data.history || [];
 
-        // 👇 Protege datos antiguos
+        // proteger datos 
         this.history = [...list].reverse().map(item => ({
           ...item,
           alerts: item.alerts ?? [],

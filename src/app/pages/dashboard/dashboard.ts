@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http'; 
 import { Component, AfterViewInit } from '@angular/core';
-import { Auth, onAuthStateChanged, signOut } from '@angular/fire/auth';
+import { Auth, signOut } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RiskService } from '../../risk.service';
 import { AuthService } from '../../auth.service';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +21,6 @@ export class Dashboard implements AfterViewInit {
   marker: any;
 
   selectedLocation: { lat: number, lng: number } | null = null;
-  history: any[] = [];
   loading = false;
 
   constructor(
@@ -33,45 +31,27 @@ export class Dashboard implements AfterViewInit {
     private authService: AuthService 
   ) {}
 
-isCheckingSession = true; // <-- NUEVO
-
 ngAfterViewInit() {
-  console.log("⏳ Esperando sesión (AuthService)...");
-
   const sub = this.authService.currentUser$.subscribe(user => {
     if (!user) {
-      console.warn("🚫 No hay sesión, volviendo al login");
-      sub.unsubscribe();
       this.router.navigate(['/login']);
+      sub.unsubscribe();
       return;
     }
 
-    console.log("🔐 Sesión detectada:", user.email);
-
-    // 👇 EVITA ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
-      this.loading = false;
-      this.getUserInfo();
-      this.loadHistory();
       this.loadMap();
+      this.getUserInfo();
     }, 0);
 
     sub.unsubscribe();
   });
 }
 
-
-
-
-
-
-
-
-
   getUserInfo() {
     this.http.get('http://127.0.0.1:8000/user-info').subscribe({
-      next: res => console.log('🟢 Backend respondió:', res),
-      error: err => console.error('❌ Error desde backend:', err)
+      next: res => console.log('🟢 Usuario:', res),
+      error: err => console.error('❌ Error usuario:', err)
     });
   }
 
@@ -80,32 +60,31 @@ ngAfterViewInit() {
     this.router.navigate(['/login']);
   }
 
-  loadHistory() {
-    this.loading = true;
-
-    this.riskService.getHistory().subscribe({
-      next: (res: any) => {
-        this.history = res.records || [];
-        console.log("📚 Historial cargado:", this.history);
-        this.loading = false;
-      },
-      error: err => {
-        console.error("❌ Error cargando historial:", err);
-        this.loading = false;
-      }
-    });
-  }
-
+  /** proceso de resultados */
   requestRisk(lat: number, lng: number) {
+
     const payload = { lat, lng };
     console.log("📡 Consultando riesgo para:", payload);
 
     this.http.post('http://127.0.0.1:8000/risk-check', payload).subscribe({
       next: (res: any) => {
-        console.log("⚠ Riesgo recibido:", res);
-        this.riskResult = res;
-        this.loadHistory();
+        console.log("⚠ Datos recibidos:", res);
 
+        // guardar resultado
+        this.riskResult = {
+          ...res,
+          extra: {
+            feels_like: res.weather.main.feels_like,
+            humidity: res.weather.main.humidity,
+            pressure: res.weather.main.pressure,
+            clouds: res.weather.clouds?.all ?? 0,
+            wind: res.weather.wind?.speed ?? 0,
+            sunrise: res.weather.sys?.sunrise,
+            sunset: res.weather.sys?.sunset
+          }
+        };
+
+        // Targetas de color segun riesgo
         if (this.marker && res.predicted_risk) {
           let color = "green";
           if (res.predicted_risk === "Medio") color = "yellow";
@@ -118,22 +97,17 @@ ngAfterViewInit() {
     });
   }
 
+  /** ubicaciones */
   getRisk() {
     if (this.selectedLocation) {
-      console.log("📌 Usando ubicación seleccionada:", this.selectedLocation);
       this.requestRisk(this.selectedLocation.lat, this.selectedLocation.lng);
-      return;
-    }
-
-    if (!navigator.geolocation) {
-      alert("Tu navegador no soporta GPS.");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const coords = { lat: position.coords.latitude, lng: position.coords.longitude };
-        console.log("📍 Usando GPS:", coords);
+        console.log("📍 GPS detectado:", coords);
 
         this.requestRisk(coords.lat, coords.lng);
 
@@ -141,12 +115,13 @@ ngAfterViewInit() {
         this.map.setCenter(coords);
       },
       (err) => {
-        console.error("❌ Error GPS:", err);
-        alert("Permite acceso a ubicación para usar SafeRoad.");
+        console.error("❌ GPS bloqueado:", err);
+        alert("⚠ Necesitamos tu ubicación para analizar el riesgo.");
       }
     );
   }
 
+  /** inicio mapa Google maps */
   async loadMap() {
     if (!document.querySelector('#google-maps-script')) {
       const script = document.createElement('script');
@@ -176,28 +151,14 @@ ngAfterViewInit() {
       draggable: false
     });
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        this.marker.setPosition(userLoc);
-        this.map.setCenter(userLoc);
-      });
-    }
-
-    // 🔥 ya no llama a la IA automáticamente
+    // Seleccionar ubicacion
     this.map.addListener("click", (event: any) => {
       this.selectedLocation = {
         lat: event.latLng.lat(),
         lng: event.latLng.lng()
       };
 
-      console.log("📍 Ubicación seleccionada:", this.selectedLocation);
       this.marker.setPosition(this.selectedLocation);
     });
-  }
-
-  // 🛠️ FIX NECESARIO
-  trackById(index: number, item: any) {
-    return item.id || index;
   }
 }

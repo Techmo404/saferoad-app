@@ -2,20 +2,20 @@
 
   <div class="login-card">
 
-    <!-- 🔹 Panel Izquierdo -->
+
     <div class="left-panel">
       <h1 class="fw-bold">Bienvenido a <br> SafeRoad AI</h1>
-      <p>Seguridad vial potenciada con inteligencia artificial 🚦</p>
+      <p>Seguridad vial potenciada con inteligencia artificial</p>
     </div>
 
-    <!-- 🔹 Formulario -->
+
     <div class="right-panel">
 
       <h2 class="text-center mb-4">Iniciar sesión</h2>
 
       <form (ngSubmit)="login()" style="display: flex; flex-direction: column; gap: 16px;">
 
-        <!-- Email -->
+
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-envelope"></i></span>
           <input
@@ -28,7 +28,7 @@
           />
         </div>
 
-        <!-- Password -->
+
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-lock"></i></span>
           <input
@@ -41,10 +41,8 @@
           />
         </div>
 
-        <!-- Mensaje de error -->
         <p *ngIf="error" class="text-danger text-center">{{ error }}</p>
 
-        <!-- Botón login -->
         <button class="btn btn-primary w-100" [disabled]="loading">
           <span *ngIf="!loading">Ingresar</span>
           <span *ngIf="loading">⏳ Procesando...</span>
@@ -52,7 +50,7 @@
 
       </form>
 
-      <!-- Link registro -->
+
       <p class="text-center mt-3">
         ¿No tienes cuenta?
         <a routerLink="/register" class="text-primary fw-semibold" style="cursor:pointer;">

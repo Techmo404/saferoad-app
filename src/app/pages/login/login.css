@@ -1,11 +1,11 @@
-/* CONTENEDOR GENERAL */
+
 .login-container {
   margin-top: 60px;
   display: flex;
   justify-content: center;
 }
 
-/* TARJETA PRINCIPAL */
+
 .login-card {
   width: 900px;
   background: white;
@@ -16,7 +16,7 @@
   box-shadow: 0px 12px 30px rgba(0,0,0,0.1);
 }
 
-/* PANEL IZQUIERDO */
+
 .left-panel {
   background: linear-gradient(135deg, #1ea6a8, #17c0c9);
   padding: 60px;
@@ -24,7 +24,7 @@
   position: relative;
 }
 
-/* Círculo decorativo */
+
 .left-panel::before {
   content: "";
   position: absolute;
@@ -43,13 +43,13 @@
   z-index: 2;
 }
 
-/* PANEL DERECHO */
+
 .right-panel {
   padding: 50px;
   align-content: center;
 }
 
-/* ESTILO INPUTS */
+
 .input-group-text {
   background: #e9ecef;
   border: none;
@@ -59,13 +59,13 @@
   border-left: none !important;
 }
 
-/* Botón deshabilitado */
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* RESPONSIVE */
+
 @media (max-width: 768px) {
   .login-card {
     grid-template-columns: 1fr;

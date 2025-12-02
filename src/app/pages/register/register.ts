@@ -38,7 +38,6 @@ export class Register {
     this.error = '';
     this.success = '';
 
-    // 🔍 Validaciones
     if (!this.name || !this.email || !this.password) {
       this.error = "Por favor completa todos los campos.";
       return;
@@ -65,10 +64,10 @@ export class Register {
 
       console.log("✔ Usuario creado:", uid);
 
-      // 🌟 Enviar email de verificación
+
       await sendEmailVerification(user);
 
-      // 💾 Guardar datos del usuario en Firestore
+
       await setDoc(doc(this.firestore, 'users', uid), {
         uid,
         name: this.name,
@@ -79,7 +78,7 @@ export class Register {
 
       this.success = "Cuenta creada 🎉 Revisa tu correo para verificar tu cuenta.";
 
-      // 🔁 Redirigir luego de 2.5 seg
+
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 2500);

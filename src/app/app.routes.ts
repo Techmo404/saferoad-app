@@ -21,7 +21,7 @@ export const routes: Routes = [
 
   {
     path: 'register',
-    component: Register     // <-- 🔥 mueve esta antes del catch-all
+    component: Register     
   },
   
   {
@@ -36,7 +36,7 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
 
-  // 🔹 Rutas que no existen
+
   {
     path: '**',
     redirectTo: 'login'

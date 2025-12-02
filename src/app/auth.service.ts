@@ -19,22 +19,39 @@ export class AuthService {
 
   private auth = getAuth();
 
-  // 🔥 undefined = cargando | null = no logged | User = logged
+
   private currentUserSubject = new BehaviorSubject<User | null | undefined>(undefined);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor() {
-    setPersistence(this.auth, browserLocalPersistence).then(() => {
+constructor() {
+  setPersistence(this.auth, browserLocalPersistence).then(() => {
 
-      console.log("⏳ Esperando Firebase Auth...");
+    console.log("⏳ Esperando Firebase Auth...");
 
-      onAuthStateChanged(this.auth, (user) => {
-        console.log("📌 Firebase respondió:", user);
-        this.currentUserSubject.next(user); 
-      });
+    onAuthStateChanged(this.auth, async (user) => {
 
+      console.log("📌 Firebase respondió:", user);
+      this.currentUserSubject.next(user);
+
+      if (user) {
+        const token = await user.getIdToken(true);
+        console.log("%c🔑 TOKEN JWT PARA FASTAPI:", "background: #222; color: #0f0; font-size:14px;");
+        console.log(token);
+
+
+        (window as any).getToken = async () => {
+          const refreshed = await user.getIdToken(true);
+          console.log("🔁 Nuevo token generado:", refreshed);
+          return refreshed;
+        };
+
+        console.log("%c🛠 Tip: escribe getToken() en la consola para obtener otro token.", "color:#09f");
+      }
     });
-  }
+
+  });
+}
+
 
   login(email: string, password: string) {
     return signInWithEmailAndPassword(this.auth, email, password);

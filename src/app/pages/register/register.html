@@ -1,42 +1,42 @@
 <div class="register-container">
   <div class="register-card row">
 
-    <!-- PANEL IZQUIERDO -->
+
     <div class="col-md-5 left-panel">
       <h2>Bienvenido</h2>
-      <p>Crea una cuenta para comenzar a utilizar SafeRoad AI 🚦.</p>
+      <p>Crea una cuenta para comenzar a utilizar SafeRoad AI .</p>
     </div>
 
-    <!-- PANEL DERECHO -->
+
     <div class="col-md-7 right-panel">
 
       <h3 class="mb-4">Registro</h3>
 
-      <!-- ERROR -->
+
       <div *ngIf="error" class="alert alert-danger">
         {{ error }}
       </div>
 
-      <!-- ÉXITO -->
+
       <div *ngIf="success" class="alert alert-success">
         {{ success }}
       </div>
 
       <form (ngSubmit)="register()">
 
-        <!-- Nombre -->
+
         <div class="mb-3">
           <label class="form-label">Nombre completo</label>
           <input class="form-control" type="text" [(ngModel)]="name" name="name" placeholder="Tu nombre">
         </div>
 
-        <!-- Email -->
+
         <div class="mb-3">
           <label class="form-label">Correo electrónico</label>
           <input class="form-control" type="email" [(ngModel)]="email" name="email" placeholder="ejemplo@correo.com">
         </div>
 
-        <!-- Password -->
+
         <div class="mb-3">
           <label class="form-label">Contraseña</label>
           <input class="form-control" type="password" [(ngModel)]="password" name="password" placeholder="mínimo 6 caracteres">

@@ -16,7 +16,7 @@ export class Login {
   email: string = '';
   password: string = '';
   error: string = '';
-  loading: boolean = false;  // 🔥 ESTA LÍNEA ERA LO QUE FALTABA
+  loading: boolean = false;  
 
   constructor(private authService: AuthService, private router: Router) {}
 

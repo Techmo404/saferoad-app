@@ -9,7 +9,7 @@ export class RiskService {
   constructor(private http: HttpClient) {}
 
   predictRisk(coords: any) {
-    return this.http.post(`${this.baseURL}/risk-check`, coords); // FIX 👌
+    return this.http.post(`${this.baseURL}/risk-check`, coords); 
   }
 
   getHistory() {

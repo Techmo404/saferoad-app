@@ -1,4 +1,4 @@
-// src/app/auth-guard.ts
+
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -11,7 +11,7 @@ export const authGuard: CanActivateFn = () => {
   console.log("⏳ Esperando validación de sesión...");
 
   return authService.currentUser$.pipe(
-    filter((state) => state !== undefined), // ⏳ espera hasta que Firebase responda
+    filter((state) => state !== undefined), 
     take(1)
   ).toPromise().then((user) => {
 
