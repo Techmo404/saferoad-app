@@ -1,0 +1,10 @@
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.history-table th, .history-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}

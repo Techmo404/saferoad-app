@@ -1,54 +1,94 @@
-.register-box {
-  width: 350px;
-  margin: 60px auto;
-  padding: 30px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0px 10px 25px rgba(0,0,0,0.08);
-  text-align: center;
-  font-family: sans-serif;
+/* CONTENEDOR GENERAL */
+.register-container {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  padding: 0 15px;
 }
 
-h2 {
-  margin-bottom: 15px;
+/* TARJETA PRINCIPAL */
+.register-card {
+  width: 900px;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
-input {
-  width: 100%;
+/* PANEL IZQUIERDO */
+.left-panel {
+  background: #1ea6a8;
+  padding: 60px;
+  color: #ffffff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Círculo decorativo */
+.left-panel::before {
+  content: "";
+  position: absolute;
+  left: -150px;
+  top: -50px;
+  width: 500px;
+  height: 500px;
+  background: #1ea6a8;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* PANEL DERECHO */
+.right-panel {
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Inputs y labels */
+.form-label {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  box-shadow: none;
+}
+
+/* Botón */
+button.btn.btn-primary {
+  border-radius: 10px;
   padding: 12px;
-  margin: 8px 0;
-  font-size: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  font-weight: 600;
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  background: #3b82f6;
-  color: white;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
+/* Botón deshabilitado */
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.success {
-  color: green;
-  margin-top: 10px;
+/* Mensajes */
+.alert {
+  border-radius: 10px;
 }
 
-.error {
-  color: red;
-  margin-top: 10px;
-}
+/* Responsive */
+@media (max-width: 768px) {
+  .left-panel {
+    display: none;
+  }
 
-.login-text {
-  margin-top: 15px;
-  font-size: 14px;
+  .register-card {
+    width: 100%;
+  }
+
+  .right-panel {
+    padding: 30px 20px;
+  }
 }

@@ -1,36 +1,53 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth.service';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';   // ⬅ IMPORTANTE
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule],  // ⬅ AGREGA RouterModule AQUÍ
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
 export class Login {
 
-  email = '';
-  password = '';
-  error = '';
+  email: string = '';
+  password: string = '';
+  error: string = '';
+  loading: boolean = false;  // 🔥 ESTA LÍNEA ERA LO QUE FALTABA
 
   constructor(private authService: AuthService, private router: Router) {}
 
   async login() {
     this.error = '';
+    this.loading = true;
 
     try {
-      console.log('🔐 Intentando iniciar sesión...');
       await this.authService.login(this.email, this.password);
-      console.log('✅ Login correcto, redirigiendo...');
       this.router.navigate(['/dashboard']);
+
     } catch (err: any) {
-      console.error("❌ Firebase error:", err.message ?? err);
-      this.error = err.message ?? 'Correo o contraseña incorrectos';
+      console.error(err);
+
+      switch (err.code) {
+        case "auth/invalid-email":
+          this.error = "El correo no es válido.";
+          break;
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+          this.error = "Correo o contraseña incorrectos.";
+          break;
+        case "auth/too-many-requests":
+          this.error = "Demasiados intentos. Intenta más tarde.";
+          break;
+        default:
+          this.error = "Error al iniciar sesión.";
+      }
+
+    } finally {
+      this.loading = false;
     }
   }
 }

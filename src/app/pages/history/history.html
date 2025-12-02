@@ -1,0 +1,41 @@
+<div class="history-container">
+  
+  <h2>Historial de Riesgos</h2>
+
+  <!-- Loader -->
+  <div *ngIf="loading">⏳ Cargando historial...</div>
+
+  <!-- Si está vacío -->
+  <div *ngIf="!loading && history.length === 0" class="empty">
+    🚫 No hay registros aún.
+  </div>
+
+  <!-- Mostrar lista -->
+  <div *ngIf="!loading && history.length > 0">
+    <div *ngFor="let item of history; trackBy: trackById" class="card">
+
+      <p><strong>📅 Fecha:</strong> {{ item.datetime }}</p>
+      <p><strong>🌡 Temperatura:</strong> {{ item.weather?.main?.temp }}°C</p>
+      <p><strong>🌤 Cielo:</strong> {{ item.weather?.weather?.[0]?.description }}</p>
+      <p><strong>🚦 Tráfico:</strong> Nivel {{ item.traffic?.level }} ({{ item.traffic?.status }})</p>
+
+      <div>
+        <strong>⚠ Alertas:</strong>
+
+        <!-- Protegido para valores undefined -->
+        <ul *ngIf="item.alerts?.length > 0">
+          <li *ngFor="let a of item.alerts">{{ a }}</li>
+        </ul>
+
+        <span *ngIf="!item.alerts || item.alerts.length === 0">
+          🟢 Ninguna
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Gráfico -->
+  <canvas id="riskChart" width="400" height="250"></canvas>
+
+</div>

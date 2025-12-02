@@ -1,21 +1,27 @@
+// src/app/auth-guard.ts
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Router, CanActivateFn } from '@angular/router';
+import { AuthService } from './auth.service';
+import { filter, take } from 'rxjs/operators';
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
-  const auth = getAuth();
+  const authService = inject(AuthService);
 
-  return new Promise<boolean>((resolve) => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("🔐 Usuario autenticado:", user.email);
-        resolve(true);
-      } else {
-        console.log("⛔ Usuario NO autenticado, enviando al login...");
-        router.navigate(['/login']);
-        resolve(false);
-      }
-    });
+  console.log("⏳ Esperando validación de sesión...");
+
+  return authService.currentUser$.pipe(
+    filter((state) => state !== undefined), // ⏳ espera hasta que Firebase responda
+    take(1)
+  ).toPromise().then((user) => {
+
+    if (user) {
+      console.log("🔐 Acceso permitido:", user.email);
+      return true;
+    }
+
+    console.log("⛔ No autenticado → Login");
+    router.navigate(['/login']);
+    return false;
   });
 };

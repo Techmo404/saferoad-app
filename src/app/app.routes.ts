@@ -3,6 +3,8 @@ import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './auth-guard';
 import { Register } from './pages/register/register';
+import { History } from './pages/history/history';
+
 
 export const routes: Routes = [
 
@@ -21,6 +23,12 @@ export const routes: Routes = [
     path: 'register',
     component: Register     // <-- 🔥 mueve esta antes del catch-all
   },
+  
+  {
+    path: 'history',
+    component: History
+  },
+
 
   {
     path: 'dashboard',

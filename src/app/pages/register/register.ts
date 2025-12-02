@@ -1,71 +1,112 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from '@angular/fire/auth';
+
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrls: ['./register.css']
 })
 export class Register {
 
-  name = '';
-  email = '';
-  password = '';
-  loading = false;
-  success = '';
-  error = '';
+  name: string = '';
+  email: string = '';
+  password: string = '';
+  loading: boolean = false;
+  success: string = '';
+  error: string = '';
 
   constructor(
     private auth: Auth,
-    private http: HttpClient,
+    private firestore: Firestore,
     private router: Router
   ) {}
 
   async register() {
+
     this.error = '';
     this.success = '';
-    this.loading = true;
 
+    // 🔍 Validaciones
     if (!this.name || !this.email || !this.password) {
-      this.error = 'Por favor completa todos los campos.';
-      this.loading = false;
+      this.error = "Por favor completa todos los campos.";
       return;
     }
 
+    if (this.password.length < 6) {
+      this.error = "La contraseña debe tener al menos 6 caracteres.";
+      return;
+    }
+
+    this.loading = true;
+
     try {
-      // 🔥 1. Crear cuenta en Firebase
+
+      console.log("▶ Creando usuario Firebase...");
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
-        this.email,
+        this.email.trim(),
         this.password
       );
 
-      const uid = userCredential.user.uid;
+      const user = userCredential.user;
+      const uid = user.uid;
 
-      // 📩 2. Guardar en tu backend
-      await this.http.post('http://127.0.0.1:8000/register', {
+      console.log("✔ Usuario creado:", uid);
+
+      // 🌟 Enviar email de verificación
+      await sendEmailVerification(user);
+
+      // 💾 Guardar datos del usuario en Firestore
+      await setDoc(doc(this.firestore, 'users', uid), {
         uid,
         name: this.name,
         email: this.email,
-        password: this.password
-      }).toPromise();
+        verified: false,
+        createdAt: new Date(),
+      });
 
-      this.success = 'Cuenta creada correctamente 🎉';
+      this.success = "Cuenta creada 🎉 Revisa tu correo para verificar tu cuenta.";
 
+      // 🔁 Redirigir luego de 2.5 seg
       setTimeout(() => {
         this.router.navigate(['/login']);
-      }, 1500);
+      }, 2500);
 
     } catch (err: any) {
-      this.error = err?.message || 'Error al registrar usuario.';
-    }
+      console.error("❌ ERROR:", err);
 
-    this.loading = false;
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          this.error = "Este correo ya está registrado.";
+          break;
+
+        case "auth/invalid-email":
+          this.error = "Correo electrónico inválido.";
+          break;
+
+        case "auth/weak-password":
+          this.error = "La contraseña es demasiado débil.";
+          break;
+
+        default:
+          this.error = "Error al registrar usuario.";
+          break;
+      }
+
+    } finally {
+      this.loading = false;
+    }
   }
 }

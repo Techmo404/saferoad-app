@@ -1,6 +1,75 @@
+
+<!-- 🔹 Barra superior con botón de salir -->
 <div class="top-bar">
   <h2 class="title">SafeRoad Dashboard</h2>
   <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
 </div>
 
-<div id="map" class="map"></div>
+<div class="dashboard-container">
+
+  <!-- 🔥 BOTÓN PRINCIPAL -->
+  <button class="risk-btn" (click)="getRisk()">
+    🚦 Analizar riesgo en esta ubicación
+  </button>
+
+
+  <!-- 🧠 RESULTADO DE LA IA -->
+  <div *ngIf="riskResult" 
+       class="alert text-center mt-3"
+       [ngClass]="{
+        'alert-success': riskResult.predicted_risk === 'Bajo',
+        'alert-warning': riskResult.predicted_risk === 'Medio',
+        'alert-danger': riskResult.predicted_risk === 'Alto' || riskResult.predicted_risk === 'Crítico'
+       }">
+
+    <h3>Resultado IA</h3>
+    <strong>Riesgo detectado:</strong> {{ riskResult.predicted_risk }} 🚦<br>
+    <strong>Coordenadas:</strong> {{ riskResult.coords?.lat | number:'1.4-4' }},
+    {{ riskResult.coords?.lng | number:'1.4-4' }} <br>
+    <small>🕒 {{ riskResult.datetime }} — Modelo: {{ riskResult.model }}</small>
+  </div>
+
+
+  <!-- 🗺️ MAPA -->
+  <div id="map" style="height: 350px; width: 100%; margin-top: 20px;"></div>
+
+
+  <!-- 📜 HISTORIAL -->
+  <div class="history-container">
+  
+    <h2 class="mt-4">Historial de Riesgos</h2>
+
+    <!-- Loader -->
+    <div *ngIf="loading">⏳ Cargando historial...</div>
+
+    <!-- Si está vacío -->
+    <div *ngIf="!loading && history.length === 0" class="empty">
+      🚫 No hay registros aún.
+    </div>
+
+    <!-- Mostrar lista -->
+    <div *ngIf="!loading && history.length > 0">
+      <div *ngFor="let item of history; trackBy: trackById" class="card">
+
+        <p><strong>📅 Fecha:</strong> {{ item.datetime }}</p>
+        <p><strong>📍 Ubicación:</strong> {{ item.coords?.lat }}, {{ item.coords?.lng }}</p>
+        <p><strong>🌡 Temp:</strong> {{ item.weather?.main?.temp }}°C</p>
+        <p><strong>🌤 Cielo:</strong> {{ item.weather?.weather?.[0]?.description }}</p>
+        <p><strong>🚦 Riesgo:</strong> 
+          <span [ngClass]="{
+            'text-success': item.predicted_risk === 'Bajo',
+            'text-warning': item.predicted_risk === 'Medio',
+            'text-danger': item.predicted_risk === 'Alto' || item.predicted_risk === 'Crítico'
+          }">
+            {{ item.predicted_risk }}
+          </span>
+        </p>
+
+        <hr>
+      </div>
+    </div>
+
+  </div>
+
+  <canvas id="riskChart" width="400" height="250"></canvas>
+</div>

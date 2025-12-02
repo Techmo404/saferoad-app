@@ -11,6 +11,9 @@ import { firebaseConfig } from './firebase-config';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './auth.interceptor';
 
+// 👇 IMPORTANTE: Firestore
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -19,9 +22,12 @@ export const appConfig: ApplicationConfig = {
 
     provideAuth(() => {
       const auth = getAuth();
-      auth.setPersistence(browserLocalPersistence); // 🔥 CORRECTO
+      auth.setPersistence(browserLocalPersistence); 
       return auth;
     }),
+
+    // 🔥 Agregamos Firestore aquí
+    provideFirestore(() => getFirestore()),
 
     provideHttpClient(
       withInterceptors([authInterceptor])
